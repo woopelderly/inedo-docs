@@ -33,7 +33,6 @@ pgutil packages upload --feed=internal-vsix --input-file=C:\visualstudio\extensi
 
 pgutil will require some [minor configuration](/docs/proget/reference-api/proget-pgutil#sources) before use.
 
-:::(internal)(Include pre-pgutil?)
 ### ProGet ____ and earlier
 
 To upload .vsix extensions in ProGet _____ and earlier, you can simply pass the extension to the feed API endpoint URL at PUT or POST.
@@ -60,13 +59,11 @@ Data: 1
 ```
 
 Once this key is added (or its data set to 1), it will require the server to be rebooted. 
-:::
 
 ### Bulk Importing Using a Drop Path
 
 ProGet includes [Drop Path](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) support to Vsix feeds. 
 
-:::(internal)(Applies to VSIX?)
 #### ProGet 2023.20 and Below
 
 ProGet 2023.20 and below do not currently support import drop paths for Maven, but we are considering adding this in a future release. Please consider joining [the existing discussion in our forums](https://forums.inedo.com/topic/3128) if this feature would be of interest to you.
@@ -79,7 +76,6 @@ To work around this limitation, follow this approach:
 Errors will occur, especially if you have invalid POM files or your directory structure does not conform to the required MAVEN convention. So check on a case-by-case basis if this matters (a bad artifact from 5 years ago can probably be ignored).
 
 You can use a tool like `curl` or even `maven deploy:deploy` to deploy individual files.
-:::
 
 ## Installing Extensions
 Installing extensions can be done through the Extension Manager, opened by navigating to "Extensions" > "Manage Extensions".

@@ -3,60 +3,37 @@ title: "Visual Studio Extension (.vsix)"
 order: 7
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----
-title: "Visual Studio Extension (.vsix)"
-order: 7
----
-
 A VSIX feed in ProGet stores Visual Studio extensions, which can then be installed directly from Visual Studio.
 
 Visual Studio does not allow the default extension gallery to be disabled or removed, and this gallery uses an internal API that is different from the documented Atom VSIX feed that ProGet provides, so no connector to the Visual Studio Gallery can currently be created in ProGet. However, connectors to other Atom VSIX feeds are supported.
 
-
 ## Prerequisite Configuration
 
-### Vsix Client Configuration
+### Adding the Feed to Visual Studio
 
-#### Adding the Feed to Visual Studio
+To add a VSIX feed to Visual Studio, an additional extension gallery must be added. To do this, navigate to "Tools" > "Options" > "Environment" > "Extensions" and click the "Add" button under "Additional Extension Galleries". Fill in the name and set the URL to the API endpoint URL of the VSIX feed.
 
-To add a VSIX feed to Visual Studio, an additional extension gallery must be added. To do this, navigate to _Tools > Options > Environment > Extensions_ and click the _Add_ button under _Additional Extension Galleries_. Fill in the name and set the URL to the API endpoint URL of the VSIX feed.
+![options](/resources/docs/visualstudio-options-extensions.png){height="" width="50%"}
 
-This allows you to install the extensions of your VSIX feed in addition to the extensions in the built-in galleries using the _Manage Extensions_ window.
+This allows you to install the extensions of your VSIX feed in addition to the extensions in the built-in galleries using the "Manage Extensions" window, opened by navigating to "Extensions" > "Manage Extensions".
 
 ## Uploading Extensions
 
-There is no official VSIX-defined API for adding packages. If you want to upload a .vsix extension, you can use Inedo's [pgutil]() and run this command:
+There is no official VSIX-defined API for adding packages. If you want to upload a .vsix extension, you can use Inedo's [pgutil](/docs/proget/reference-api/proget-pgutil) and run this command:
 
+```bash
+pgutil packages upload --feed=«vsix-feed-name» --input-file=«path-to-extension»
 ```
-pgutil packages upload 
+
+For example, to uploading the package `myExtension.vsix` located in `C:\visualstudio\extensions` to the feed `internal-vsix` you would enter:
+
+```plaintext
+pgutil packages upload --feed=internal-vsix --input-file=C:\visualstudio\extensions\myExtension.vsix
 ```
 
-pgutil will require some [minor configuration]() before use.
+pgutil will require some [minor configuration](/docs/proget/reference-api/proget-pgutil#sources) before use.
 
+:::(internal)(Include pre-pgutil?)
 ### ProGet ____ and earlier
 
 To upload .vsix extensions in ProGet _____ and earlier, you can simply pass the extension to the feed API endpoint URL at PUT or POST.
@@ -83,25 +60,14 @@ Data: 1
 ```
 
 Once this key is added (or its data set to 1), it will require the server to be rebooted. 
+:::
 
+### Bulk Importing Using a Drop Path
 
-## Installing Extensions
+ProGet includes [Drop Path](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) support to Vsix feeds. 
 
-
-## Creating Extensions
-
-
-## Publishing Extensions
-
-
-
-
-
-## Bulk Importing Using a Drop Path
-
-ProGet includes [Drop Path](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) support to Maven Feeds. Maven packages are made up of a POM file and one or more artifacts, like jar, war, ear, xml, etc...  When adding Maven packages to a drop folder, each package should be its own folder that contains the POM file, and all related artifacts. When Maven packages are imported via a drop path, ProGet will first find all files that end with `.pom` and then will add any artifacts in the same folder as that POM file.
-
-### ProGet 2023.20 and Below
+:::(internal)(Applies to VSIX?)
+#### ProGet 2023.20 and Below
 
 ProGet 2023.20 and below do not currently support import drop paths for Maven, but we are considering adding this in a future release. Please consider joining [the existing discussion in our forums](https://forums.inedo.com/topic/3128) if this feature would be of interest to you.
 
@@ -113,14 +79,16 @@ To work around this limitation, follow this approach:
 Errors will occur, especially if you have invalid POM files or your directory structure does not conform to the required MAVEN convention. So check on a case-by-case basis if this matters (a bad artifact from 5 years ago can probably be ignored).
 
 You can use a tool like `curl` or even `maven deploy:deploy` to deploy individual files.
+:::
+
+## Installing Extensions
+Installing extensions can be done through the Extension Manager, opened by navigating to "Extensions" > "Manage Extensions".
+
+![extensions](/resources/docs/visualstudio-extensions-manager.png){height="" width="50%"}
 
 ## Technical Limitations
-
-## VSIX Limitations
 
 ### Windows Integrated Authentication
 
 Visual Studio requires "Anonymous" access to a ProGet instance. This is not possible if your instance of ProGet has built-in authentication enabled. To work around this problem, you can set up a second site in IIS without Windows Integrated Authentication enabled, pointing to the same path on disk.
-
-### Connectors & Local Indexing
 

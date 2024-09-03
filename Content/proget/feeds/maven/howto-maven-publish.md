@@ -1,11 +1,39 @@
 ---
-title: "HOWTO: Create and Publish Maven Packages"
+title: "HOWTO: Create and Publish Maven Packages to a Private Feed"
 order: 2
 ---
 
-When working with Java projects, managing and distributing packages efficiently is crucial for maintaining a streamlined development process. Maven is a popular tool for building and managing Java-based projects, and ProGet offers a powerful platform to host and manage those Maven packages internally. This article will guide you through the steps to create and publish Maven packages using ProGet, ensuring that your development teams can easily access and share your Java components securely and efficiently. Whether you're setting up your first Maven package or looking to optimize your current workflow, this guide will provide practical insights and actionable steps to help you make the most of ProGet's capabilities.
+ProGet lets you to connect to [Maven Central](https://central.sonatype.com/) to proxy open source Maven packages. However, it also lets you host and manage your own private Maven packages internally. This article will guide you through the steps to create and publish Maven packages to a ProGet Maven Feed.
 
-## Step 1: Create a Maven Feed
+If the Maven feed is hosted internally, this will also allow your team to access the packages in an offline environment. 
+
+This article will run through a standard example scenario of a company, Kramerica, configuring ProGet to create a private Maven feed that your team can use to access and consume your private Maven packages. This configuration would also allow the feed to be used offline.
+
+## Step 1: Creating and Naming a New Maven Feed
+
+The first thing we need to do is create a "Maven" feed. We start by selecting "Feeds" and "Create New Feed".
+
+![Create New Feed](/resources/docs/proget-feeds-createnewfeed.png){height="" width="50%"}
+
+Next, we need to select "Maven" as we will be using Maven packages.
+
+![Create Maven Feed](/resources/docs/proget-maven-createfeed.png){height="" width="50%"}
+
+We will then select "No Connectors (Private Packages only)" as this feed is intended for our own private packages.
+
+![No Connectors](/resources/docs/proget-maven-noconnectors.png){height="" width="50%"}
+
+From here, we name our feed as specified below, and then select "Create Feed". 
+
+![Name Feed](/resources/docs/proget-maven-namefeed.png){height="" width="50%"}
+
+Finally, we will keep the "Track Package Usage" box checked, and then select "Set Feed Features", which will create the feed, 
+
+![Feed Features](/resources/docs/proget-maven-feedfeatures.png){height="" width="50%"}
+
+We will now be redirected to our `internal-maven` feed, which is currently empty and will be populated with packages later.
+
+![Feed Detail](/resources/docs/proget-maven-emptyfeed.png){height="" width="50%"}
 
 
 ## Step 2: Create Your Package

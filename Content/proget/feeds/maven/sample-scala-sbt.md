@@ -1,6 +1,6 @@
 ---
 title: "Sample: sbt (Scala)"
-order: 3
+order: 4
 ---
 
 [sbt](https://www.scala-sbt.org/) is built for Scala and Java projects.  In this sample, we built a simple Java library that demonstrates integrating sbt with ProGet.

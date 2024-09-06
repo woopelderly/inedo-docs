@@ -90,18 +90,6 @@ Finally, use the file browser to select the package and click "Upload File".
 
 ProGet allows you to bulk upload by configuring a [Drop Path](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) for your Visual Studio Extension feed. 
 
-### Option 4: Using PowerShell (for ProGet 2023 and below)
-To upload `.vsix` extensions in ProGet 2023 and earlier, you can simply pass the extension to the feed API endpoint URL at `PUT` or `POST`.
-
-```powershell
-# PowerShell example
-Invoke-RestMethod https://proget.example.com/vsix/FeedName `
--InFile .\MyExtension.vsix `
--Headers @{"Authorization" = "Basic " + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("api:xxxxxxxxxxxxxx"))}
-```
-
-Note that PowerShell does not support TLS 1.2 (defined by [RFC 5246](https://tools.ietf.org/html/rfc5246), August 2008) by default. If your server does not allow TLS 1.0 connections (required for PCI compliance since June 2018), you will need to enable TLS 1.2 before running the above command.
-
 ## Step 4.1: Adding the Feed to Visual Studio
 
 To add a VSIX feed to Visual Studio, an additional extension gallery must be added. To do this, navigate to "Tools" > "Options" > "Environment" > "Extensions" and click the "Add" button under "Additional Extension Galleries". Fill in the name and set the URL to the API endpoint URL of the VSIX feed.

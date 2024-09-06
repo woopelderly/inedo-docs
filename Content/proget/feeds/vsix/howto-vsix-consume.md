@@ -7,9 +7,9 @@ By using ProGet, teams can take extension packages from Microsoft’s public Vis
 
 If the Visual Studio Extension feed is hosted internally, this will also allow your team to access the packages in an offline environment. 
 
-This article will run through a standard example scenario of a company, Kramerica, configuring ProGet to create a feed that acts as a private Visual Studio Extension gallery for a team using either Visual Studio and Visual Studio Code to access and consume a curated selection of Visual Studio Extension packages. This configuration would also allow the feed to be used offline.
+This article will run through a standard example scenario of a company, Kramerica, configuring ProGet to create a feed that acts as a private Visual Studio Extension gallery for a team using either Visual Studio or Visual Studio Code to access and consume a curated selection of Visual Studio Extension packages. This configuration would also allow the feed to be used offline.
 
-## Step 1: Creating and Naming a New Feeds
+## Step 1: Creating and Naming a New Feed
 
 The first thing we need to do is create a "Visual Studio Extension" feed. We start by selecting "Feeds" and "Create New Feed".
 
@@ -19,7 +19,7 @@ Next, we need to select "Visual Studio Extensions" as we will be using Visual St
 
 ![Create Vsix Feed](/resources/docs/proget-newfeed-vsix.png){height="" width="50%"}
 
-From here, we name our feed as specified below.
+From here, we name our feed, which we will call `private-vsix` in this example.
 
 ![Name Feed](/resources/docs/proget-vsix-naming.png){height="" width="50%"}
 
@@ -27,7 +27,7 @@ Finally, we select "Create Feed", which will create the feed, and redirect us to
 
 ![Feed Detail](/resources/docs/proget-vsix-empty.png){height="" width="50%"}
 
-## Step 2: Set Permissions to Upload and Manage Packages
+## Step 2: Set Permissions
 
 There are many ways to [configure security access controls for uses and groups](/docs/proget/administration-security) in ProGet. In this example, we want to permit only administrators and network engineers to upload packages to the `private-vsix` feed, since they're trained to check the quality, licenses, and vulnerabilities of open-source packages. To ensure this rule, we'll set up a new permission. By default, only administrators have assigned permissions.
 
@@ -47,9 +47,11 @@ After saving these privileges, the task overview page looks like this:
 
 ![Overview](/resources/docs/proget-vsix-permissions-overview.png){height="" width="50%"}
 
-## Step 3: Set Permissions to View/Download Packages (Optional)
+:::(warn)(Authentication in Visual Studio)
+Visual Studio does not support authenticated feeds, and will be unable to connect to your feed if your instance of ProGet has built-in authentication enabled. To allow your developers access to view and download packages from your feed through Visual Studio, make sure "Anonymous" access is set up in your ProGet instance. 
 
-To allow your developers to access your Visual Studio Extension Feed through Visual Studio, it will require "Anonymous" access to a ProGet instance. This is not possible if your instance of ProGet has built-in authentication enabled. To work around this problem, you can set up a second site in [IIS](/docs/installation/installing-on-iis/various-iis-configuring-iis-roles-and-features) without Windows Integrated Authentication enabled, pointing to the same path on disk.
+![permission](/resources/docs/proget-permissions-vsix.png){height="" width="50%"}
+:::
 
 If you want to add permissions this way, first create
 
@@ -66,7 +68,7 @@ You can use Inedo's [pgutil](/docs/proget/reference-api/proget-pgutil) tool to u
 pgutil packages upload --feed=«vsix-feed-name» --input-file=«path-to-extension»
 ```
 
-For example, to uploading the package `myExtension.vsix` located in `C:\visualstudio\extensions` to the feed `private-vsix` you would enter:
+For example, to upload the package `myExtension.vsix` located in `C:\visualstudio\extensions` to the feed `private-vsix` you would enter:
 
 ```plaintext
 pgutil packages upload --feed=private-vsix --input-file=C:\visualstudio\extensions\myExtension.vsix
@@ -101,9 +103,9 @@ This allows you to install the extensions of your VSIX feed in addition to the e
 
 ![extensions](/resources/docs/visualstudio-extensions-manager.png){height="" width="50%"}
 
-## Step 4.1: Using Packages from a Feed with Visual Studio Code
+## Step 4.1: Adding Packages from a Feed to VS Code
 
-Currently Visual Studio Code does not support private galleries, despite there being a [request](https://github.com/microsoft/vscode/issues/21839) for it that has been open since 2017. You can still upload extensions to a VSIX feed, but users will need to manually download them and then import them into their Visual Studio Code.
+Currently, Visual Studio Code does not support private galleries, despite there being a [request](https://github.com/microsoft/vscode/issues/21839) for it that has been open since 2017. You can still upload extensions to a VSIX feed, but users will need to manually download them and then import them into their Visual Studio Code.
 
 To download, navigate to a version of the package and select "Download Package"
 
@@ -118,3 +120,24 @@ Once the file is downloaded, in VS Code navigate to "Extensions" > "..." > "Inst
 To provide developers using VS Code with the above guidance when using VS Code, you can add [Custom Feed Instructions](/docs/proget/feeds/feed-overview/proget-usage-instructions)
 
 To create custom feed instructions, navigate to your Visual Studio Extensions feed and select "Manage Feed".
+
+![manage feed](/resources/docs/proget-vsix-managefeed.png){height="" width="50%"}
+
+Then select "Create" under "Feed Usage Instructions". 
+
+
+Give the instructions a title and then enter them using MarkDown syntax. For the instructions given above, you can use this pre-written example:
+
+```markdown
+Currently, Visual Studio Code does not support private galleries. To install extensions users will need to manually download them and then import them into their Visual Studio Code by following these steps:
+
+1. Navigate to a version of a package
+2. Select "Download Package"
+3. In VS Code, navigate to "Extensions" > "..." > "Install from VSIX"
+4. Using the file browser, locate the `.vix` VS Code extension and select it.
+
+```
+
+After entering title and instructions, select "Save". The instructions will then be found by navigating to your Visual Studio Extensions feed, and selecting the title from the drop-down menu.
+
+![instructions](/resources/docs/proget-vsix-instructions.png){height="" width="50%"}

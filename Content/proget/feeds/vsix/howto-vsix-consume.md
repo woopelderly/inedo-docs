@@ -3,11 +3,11 @@ title: "HOWTO: Create a Private Extension Gallery for Visual Studio and Visual S
 order: 1
 ---
 
-By using ProGet, teams can take extension packages from Microsoft’s public Visual Studio Extension repository, the [Visual Studio Marketplace](https://marketplace.visualstudio.com/), and upload them to ProGet, creating a private extension gallery of curated packages that your team can access. 
+By using ProGet, teams can take extension packages from Microsoft’s public Visual Studio Extension repository, the [Visual Studio Marketplace](https://marketplace.visualstudio.com/), and upload them to ProGet as packages, creating a feed that acts as a private extension gallery of curated packages that your team can access. 
 
 If the Visual Studio Extension feed is hosted internally, this will also allow your team to access the packages in an offline environment. 
 
-This article will run through a standard example scenario of a company, Kramerica, configuring ProGet to create a private Visual Studio Extension gallery that can be accessed by both Visual Studio and Visual Studio code for their team to access and consume a curated selection of Visual Studio Extensions packages. This configuration would also allow the feed to be used offline.
+This article will run through a standard example scenario of a company, Kramerica, configuring ProGet to create a feed that acts as a private Visual Studio Extension gallery for a team using either Visual Studio and Visual Studio Code to access and consume a curated selection of Visual Studio Extension packages. This configuration would also allow the feed to be used offline.
 
 ## Step 1: Creating and Naming a New Feeds
 
@@ -27,7 +27,7 @@ Finally, we select "Create Feed", which will create the feed, and redirect us to
 
 ![Feed Detail](/resources/docs/proget-vsix-empty.png){height="" width="50%"}
 
-## Step 2: Set Permissions
+## Step 2: Set Permissions to Upload and Manage Packages
 
 There are many ways to [configure security access controls for uses and groups](/docs/proget/administration-security) in ProGet. In this example, we want to permit only administrators and network engineers to upload packages to the `private-vsix` feed, since they're trained to check the quality, licenses, and vulnerabilities of open-source packages. To ensure this rule, we'll set up a new permission. By default, only administrators have assigned permissions.
 
@@ -43,15 +43,17 @@ Next, we will fill out the following dialog to give the "Network Engineers" user
 
 ![Permit Manage Feed](/resources/docs/proget-vsix-permissions-managefeed.png){height="" width="50%"}
 
-Following the same steps, we will also give the "Developers" user group permission to "View and Download" packages from the `private-vsix` feed.
-
-![Permit View Feed](/resources/docs/proget-vsix-permissions-viewfeed.png){height="" width="50%"}
-
-After saving these two privileges, the task overview page looks like this:
+After saving these privileges, the task overview page looks like this:
 
 ![Overview](/resources/docs/proget-vsix-permissions-overview.png){height="" width="50%"}
 
-## Step 3: Upload Extension Packages to ProGet
+## Step 3: Set Permissions to View/Download Packages (Optional)
+
+To allow your developers to access your Visual Studio Extension Feed through Visual Studio, it will require "Anonymous" access to a ProGet instance. This is not possible if your instance of ProGet has built-in authentication enabled. To work around this problem, you can set up a second site in [IIS](/docs/installation/installing-on-iis/various-iis-configuring-iis-roles-and-features) without Windows Integrated Authentication enabled, pointing to the same path on disk.
+
+If you want to add permissions this way, first create
+
+## Step 3: Upload Extensions as Packages to ProGet
 
 Now we will populate our Visual Studio Extensions feed `private-vsix` with extensions. These can be downloaded from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/). 
 
@@ -71,7 +73,6 @@ pgutil packages upload --feed=private-vsix --input-file=C:\visualstudio\extensio
 ```
 
 pgutil will require some [minor configuration](/docs/proget/reference-api/proget-pgutil#sources) before use.
-
 
 ### Option 2: Through the UI
 You can use the ProGet UI to upload packages. Navigate to "Feeds" > the `private-vsix` feed and select "Add Package" from the drop-down menu.
@@ -100,4 +101,20 @@ This allows you to install the extensions of your VSIX feed in addition to the e
 
 ![extensions](/resources/docs/visualstudio-extensions-manager.png){height="" width="50%"}
 
-## Step 4.1: Adding the Feed to Visual Studio Code
+## Step 4.1: Using Packages from a Feed with Visual Studio Code
+
+Currently Visual Studio Code does not support private galleries, despite there being a [request](https://github.com/microsoft/vscode/issues/21839) for it that has been open since 2017. You can still upload extensions to a VSIX feed, but users will need to manually download them and then import them into their Visual Studio Code.
+
+To download, navigate to a version of the package and select "Download Package"
+
+![download](/resources/docs/proget-vsix-downloadpackage.png){height="" width="50%"}
+
+Once the file is downloaded, in VS Code navigate to "Extensions" > "..." > "Install from VSIX" and then using the file browser to locate the `.vix` VS Code extension locally.
+
+![install](/resources/docs/vscode-installpackage.png){height="" width="50%"}
+
+### Adding Custom Feed Instructions (Optional)
+
+To provide developers using VS Code with the above guidance when using VS Code, you can add [Custom Feed Instructions](/docs/proget/feeds/feed-overview/proget-usage-instructions)
+
+To create custom feed instructions, navigate to your Visual Studio Extensions feed and select "Manage Feed".

@@ -65,39 +65,39 @@ To do this, [create an API key](/docs/buildmaster/reference/api/buildmaster-admi
 
 Now we will populate our Maven feed `private-maven` with artifacts as packages. These can be downloaded from [Maven Central](https://central.sonatype.com/). 
 
-ProGet allows you to upload packages from a local source through various means. This guide will offer three options; using [pgutil](/docs/proget/reference-api/proget-pgutil), through the UI, or bulk uploading.
+ProGet allows you to upload artifacts from a local source through various means. This guide will offer three options; using [pgutil](/docs/proget/reference-api/proget-pgutil), through the UI, or bulk uploading.
 
 ### Option 1: Using Pgutil
 You can use Inedo's [pgutil](/docs/proget/reference-api/proget-pgutil) tool to upload packages by running this command:
 
 ```bash
-pgutil packages upload --feed=«vsix-feed-name» --input-file=«path-to-extension»
+pgutil packages upload --feed=«maven-feed-name» --input-file=«path-to-artifact»
 ```
 
-For example, to upload the package `myExtension.vsix` located in `C:\visualstudio\extensions` to the feed `private-vsix` you would enter:
+For example, to upload the file `myArtifact.pom` located in `C:\maven\projects` to the feed `private-maven` you would enter:
 
 ```plaintext
-pgutil packages upload --feed=private-vsix --input-file=C:\visualstudio\extensions\myExtension.vsix
+pgutil packages upload --feed=private-maven --input-file=C:\maven\projects\myArtifact.pom
 ```
 
 pgutil will require some [minor configuration](/docs/proget/reference-api/proget-pgutil#sources) before use.
 
 ### Option 2: Through the UI
-You can use the ProGet UI to upload packages. Navigate to "Feeds" > the `private-vsix` feed and select "Add Package" from the drop-down menu.
+You can use the ProGet UI to upload packages. Navigate to "Feeds" > the `private-maven` feed and select "Add Artifact" from the drop-down menu.
 
 ![Add Package](/resources/docs/proget-vsix-addpackage.png){height="" width="50%"}
 
-Then select "Upload Package".
+Then select "Upload Maven Artifact".
 
 ![Upload Package](/resources/docs/proget-uploadpackage.png){height="" width="50%"}
 
-Finally, use the file browser to select the package and click "Upload File".
+Finally, use the file browser to select the package and click "Upload".
 
 ![Upload File](/resources/docs/proget-vsix-uploadpackage.png){height="" width="50%"}
 
 ### Option 3: Bulk Package Upload
 
-ProGet allows you to [bulk upload](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) extensions to your Maven feed. 
+ProGet allows you to [bulk upload](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) artifacts to your Maven feed. 
 
 ## Step 4.1: Adding the Feed to Visual Studio
 

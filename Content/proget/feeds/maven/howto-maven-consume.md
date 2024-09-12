@@ -3,7 +3,7 @@ title: "HOWTO: Create a Private Repository for Maven Packages"
 order: 1
 ---
 
-By using ProGet, teams can take OSS Components from [Maven Central](https://central.sonatype.com/), the primary repository for Java and other JVM platform libraries. They can then upload them to ProGet as packages, creating a feed that acts as a private extension gallery of curated packages that your team can access. 
+By using ProGet, teams can take Maven Artifacts from [Maven Central](https://central.sonatype.com/), the primary repository for Java and other JVM platform libraries. They can then upload them to ProGet as packages, creating a feed that acts as a private extension gallery of curated packages that your team can access. 
 
 If the Maven feed is hosted internally, this will also allow your team to access the packages in an offline environment. 
 
@@ -39,7 +39,7 @@ We then navigate to the "Tasks / Permissions" tab, listing the currently configu
 
 ![Tasks/Permissions](/resources/docs/proget-taskspermissions-add.png){height="" width="50%"}
 
-Next, we will fill out the following dialog to give the "Network Engineers" user group permission to "Manage Feed" for the `private-vsix` feed.
+Next, we will fill out the following dialog to give the "Network Engineers" user group permission to "Manage Feed" for the `private-maven` feed.
 
 ![Permit Manage Feed](/resources/docs/proget-vsix-permissions-managefeed.png){height="" width="50%"}
 
@@ -47,19 +47,25 @@ After saving these privileges, the task overview page looks like this:
 
 ![Overview](/resources/docs/proget-vsix-permissions-overview.png){height="" width="50%"}
 
-:::(warn)(Authentication in Visual Studio)
-Visual Studio does not support authenticated feeds, and will be unable to connect to your feed if your instance of ProGet has built-in authentication enabled. To allow your developers access to view and download packages from your feed through Visual Studio, make sure "Anonymous" access is set up in your ProGet instance. 
+To allow your developers to view and download your `private-maven` fee, you must configure Maven to authenticate with ProGet.
 
-![permission](/resources/docs/proget-permissions-vsix.png){height="" width="50%"}
-:::
+To do this, [create an API key](/docs/buildmaster/reference/api/buildmaster-administration-security-api-keys) that has the` View/Download` permissions for your Maven feed. Once you have that, you can edit the servers node of your settings.xml file as follows:
 
-If you want to add permissions this way, first create
+```xml
+<servers>
+    <server>
+        <id>central</id>
+        <username>api</username>
+        <password>«api-key»</password>
+    </server>
+</servers>
+```
 
-## Step 3: Upload Extensions as Packages to ProGet
+## Step 3: Upload Artifacts as Packages to ProGet
 
-Now we will populate our Visual Studio Extensions feed `private-vsix` with extensions. These can be downloaded from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/). 
+Now we will populate our Maven feed `private-maven` with artifacts as packages. These can be downloaded from [Maven Central](https://central.sonatype.com/). 
 
-ProGet allows you to upload packages from a local source through various means. This guide will offer four options; using [pgutil](/docs/proget/reference-api/proget-pgutil), through the UI, bulk uploading or by using PowerShell (For ProGet 2023 and below).
+ProGet allows you to upload packages from a local source through various means. This guide will offer three options; using [pgutil](/docs/proget/reference-api/proget-pgutil), through the UI, or bulk uploading.
 
 ### Option 1: Using Pgutil
 You can use Inedo's [pgutil](/docs/proget/reference-api/proget-pgutil) tool to upload packages by running this command:
@@ -91,7 +97,7 @@ Finally, use the file browser to select the package and click "Upload File".
 
 ### Option 3: Bulk Package Upload
 
-ProGet allows you to [bulk upload](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) extensions to your Visual Studio Extension feed. 
+ProGet allows you to [bulk upload](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) extensions to your Maven feed. 
 
 ## Step 4.1: Adding the Feed to Visual Studio
 

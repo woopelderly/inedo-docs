@@ -99,55 +99,102 @@ Finally, use the file browser to select the package and click "Upload".
 
 ProGet allows you to [bulk upload](/docs/proget/feeds/feed-overview/proget-bulk-import-with-droppath) artifacts to your Maven feed. 
 
-## Step 4.1: Adding the Feed to Visual Studio
+## Step 4: Configure ProGet Feed as Repositories
 
-To add a VSIX feed to Visual Studio, an additional extension gallery must be added. To do this, navigate to "Tools" > "Options" > "Environment" > "Extensions" and click the "Add" button under "Additional Extension Galleries". Fill in the name and set the URL to the API endpoint URL of the VSIX feed.
+Maven uses two types of repositories:
+* normal repositories, which are used for libraries and other artifacts
+* plugin repositories, which are used for the many plugins that Maven requires
 
-![options](/resources/docs/visualstudio-options-extensions.png){height="" width="50%"}
+When searching for content (i.e. ordinary artifacts or plugins), Maven will look in the `settings.xml` files for a repository named `central`. If this isn't found, the default repository on `maven.org` will be used.
 
-This allows you to install the extensions of your VSIX feed in addition to the extensions in the built-in galleries using the "Extension Manager" window, opened by navigating to "Extensions" > "Manage Extensions".
+Therefore, we recommend adding a `central` repository to your `settings.xml` by editing the `repositories` and `pluginRepositories` nodes as follows:
 
-![extensions](/resources/docs/visualstudio-extensions-manager.png){height="" width="50%"}
-
-### Managing Galleries with Registry Settings
-
-To [manage multiple machines or control access to extension galleries in Visual Studio](https://learn.microsoft.com/en-us/visualstudio/extensibility/how-to-manage-a-private-gallery-by-using-registry-settings?view=vs-2022), you can use a `.pkgdef file`. This allows you to add, prioritize, or disable galleries, including your private ProGet feed, by modifying registry settings. You can also disable public galleries or set your private feed to appear first.
-
-## Step 4.2: Adding Packages from a Feed to VS Code
-
-Currently, Visual Studio Code does not support private galleries, despite there being a [request](https://github.com/microsoft/vscode/issues/21839) for it that has been open since 2017. You can still upload extensions to a VSIX feed, but users will need to manually download them and then import them into their Visual Studio Code.
-
-To download, navigate to a version of the package and select "Download Package"
-
-![download](/resources/docs/proget-vsix-downloadpackage.png){height="" width="50%"}
-
-Once the file is downloaded, in VS Code navigate to "Extensions" > "..." > "Install from VSIX" and then using the file browser to locate the `.vsix` VS Code extension locally.
-
-![install](/resources/docs/vscode-installpackage.png){height="" width="50%"}
-
-### Adding Custom Feed Instructions (Optional)
-
-To provide developers using VS Code with the above guidance when using VS Code, you can add [Custom Feed Instructions](/docs/proget/feeds/feed-overview/proget-usage-instructions)
-
-To create custom feed instructions, navigate to your Visual Studio Extensions feed and select "Manage Feed".
-
-![manage feed](/resources/docs/proget-vsix-managefeed.png){height="" width="50%"}
-
-Then select "Create" under "Feed Usage Instructions". 
-
-
-Give the instructions a title and then enter them using MarkDown syntax. For the instructions given above, you can use this pre-written example:
-
-```markdown
-Currently, Visual Studio Code does not support private galleries. To install extensions users will need to manually download them and then import them into their Visual Studio Code by following these steps:
-
-1. Navigate to a version of a package
-2. Select "Download Package"
-3. In VS Code, navigate to "Extensions" > "..." > "Install from VSIX"
-4. Using the file browser, locate the `.vsix` VS Code extension and select it.
-
+```xml
+<repositories>
+    <repository>
+        <id>central</id>
+        <url>«maven-feed-api-endpoint»</url>
+        <snapshots><enabled>true</enabled></snapshots>
+        <releases><enabled>true</enabled></releases>
+    </repository>
+</repositories>
+<pluginRepositories>
+    <pluginRepository>
+        <id>central</id>
+        <url>«maven-feed-api-endpoint»</url>
+        <snapshots><enabled>true</enabled></snapshots>
+        <releases><enabled>true</enabled></releases>
+    </pluginRepository>
+</pluginRepositories>
 ```
 
-After entering title and instructions, select "Save". The instructions will then be found by navigating to your Visual Studio Extensions feed, and selecting the title from the drop-down menu.
+You will find the `«maven-feed-api-endpoint»` on the browse feed page in ProGet.
 
-![instructions](/resources/docs/proget-vsix-instructions.png){height="" width="50%"}
+![Feed URL](/resources/docs/proget-uploadpackage.png){height="" width="50%"}
+
+## Step 5: Add a Repository Mirror
+
+A POM file can reference a Maven repository directly, bypassing your `settings.xml` configuration. To prevent this, we recommend also configuring a mirror to ensure that all artifact requests go to your feed.
+
+```xml
+<mirrors>
+	<mirror>
+	  <id>proget</id>
+	  <name>ProGet</name>
+	  <url>«maven-feed-api-endpoint»</url>
+	  <mirrorOf>*</mirrorOf>
+	</mirror>
+</mirrors>
+```
+
+If you want to mirror a specific repository, you can change the `mirrorOf` to be the ID of a repository.
+
+#### Example: settings.xml
+
+To put it all together, here is an example `settings.xml` that will push/pull artifacts and plugins from `http://progetsv:8624/maven2/my-maven/` using the API key `apiKey12345`.
+
+```xml
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"          
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>central</id>
+            <username>api</username>
+            <password>apiKey12345</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>ProGet</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>http://progetsv:8624/maven2/my-maven</url>
+                    <snapshots><enabled>true</enabled></snapshots>
+                    <releases><enabled>true</enabled></releases>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central</id>
+                    <url>http://progetsv:8624/maven2/my-maven</url>
+                    <snapshots><enabled>true</enabled></snapshots>
+                    <releases><enabled>true</enabled></releases>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>ProGet</activeProfile>
+    </activeProfiles>
+    <mirrors>
+        <mirror>
+            <id>proget</id>
+            <name>ProGet</name>
+            <url>http://progetsv:8624/maven2/my-maven</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>    
+</settings>
+```

@@ -1,6 +1,6 @@
 ---
 title: "ProGet SCA Integration with Java"
-order: 1
+order: 3
 ---
 
 [Projects and Releases](/docs/proget/sca/builds) in ProGet let you track the open-source and third-party components (packages) that your organization uses, and help you identify issues like vulnerabilities, license violations, and missing packages.
